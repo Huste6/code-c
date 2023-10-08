@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_CONTACTS 40
+
+struct contact {
+    char name[50];
+    char address[100];
+    char phone[15];
+};
+//phonebook là 1 mảng kiểu contact chứa các dữ liệu cho vào
+void add_contact(struct contact phonebook[], int *count) {
+    if (*count == MAX_CONTACTS) {
+        printf("Phonebook is full!\n");
+    }
+    struct contact new_contact;
+    printf("Enter name: ");
+    scanf("%s", new_contact.name);
+    printf("Enter address: ");
+    scanf("%s", new_contact.address);
+    printf("Enter phone number: ");
+    scanf("%s", new_contact.phone);
+    phonebook[(*count)++] = new_contact;
+    // thêm new_contact vào danh bạ phonebook đồng thời tăng biến count lên 1;
+    printf("Contact added.\n");
+}
+
+void search_by_phone(struct contact phonebook[], int count) {
+    char search_phone[15];
+    printf("Enter phone to search: ");
+    scanf("%s", search_phone);
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(phonebook[i].phone, search_phone) == 0) {
+            printf("Name: %s\n Address: %s\n", phonebook[i].name, phonebook[i].address);
+            found = 1;
+            break;
+        }
+    }
+    if (!found) {
+        printf("Phone not found.\n");
+    }
+}
+
+void print_by_district(struct contact phonebook[], int count) {
+    char search_district[50];
+    printf("Enter district to search: ");
+    scanf("%s", search_district);
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (strstr(phonebook[i].address, search_district) != NULL ) {
+            printf("Name: %s\n Phone: %s\n", phonebook[i].name, phonebook[i].phone);
+            found = 1;
+        }
+    }
+    if (!found) {
+        printf("No contacts in that district.\n");
+    }
+}
+
+int main() {
+    struct contact phonebook[MAX_CONTACTS];
+    int count = 0;
+    int choice;
+    
+    do {
+        printf("\nSelect an option:\n");
+        printf("1. Add contact\n");
+        printf("2. Search by phone\n");
+        printf("3. Print by district\n");
+        printf("4. Exit\n");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                add_contact(phonebook, &count);
+                break;
+            case 2:
+                search_by_phone(phonebook, count);
+                break;
+            case 3:
+                print_by_district(phonebook, count);
+                break;
+            case 4:
+                return 0;
+            default:
+                printf("Invalid choice.\n");
+                break;
+        }
+    } while (1);
+    return 0;
+}

@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 200005;
+
+int n, m, s, t, sccCnt = 0, dfsCnt = 0, top = 0;
+int head[N], dfn[N], low[N], sccId[N], stk[N], ind[N], outd[N];
+bool ins[N];
+struct Edge { int v, nxt; } e[N << 2];
+
+void addEdge(int u, int v) {
+e[++m] = (Edge){v, head[u]}, head[u] = m;
+}
+
+void tarjan(int u) {
+dfn[u] = low[u] = ++dfsCnt;
+stk[++top] = u, ins[u] = true;
+for (int i = head[u], v; i; i = e[i].nxt) {
+v = e[i].v;
+if (!dfn[v]) {
+tarjan(v);
+low[u] = min(low[u], low[v]);
+} else if (ins[v]) {
+low[u] = min(low[u], dfn[v]);
+}
+}
+if (dfn[u] == low[u]) {
+sccCnt++;
+while (true) {
+int v = stk[top--];
+ins[v] = false;
+sccId[v] = sccCnt;
+if (u == v) break;
+}
+}
+}
+
+int main() {
+ios::sync_with_stdio(false);
+cin >> n >> m;
+for (int i = 1, u, v; i <= m; ++i) {
+cin >> u >> v;
+addEdge(u, v);
+}
+for (int i = 1; i <= n; ++i) {
+if (!dfn[i]) tarjan(i);
+}
+for (int u = 1; u <= n; ++u) {
+for (int i = head[u], v; i; i = e[i].nxt) {
+v = e[i].v;
+if (sccId[u] != sccId[v]) {
+ind[sccId[v]]++;
+outd[sccId[u]]++;
+}
+}
+}
+int sccIndDeg0 = 0, sccOutDeg0 = 0;
+for (int i = 1; i <= sccCnt; ++i) {
+if (!ind[i]) sccIndDeg0++;
+if (!outd[i]) sccOutDeg0++;
+}
+if (sccCnt == 1) cout << 0 << endl;
+else cout << max(sccIndDeg0, sccOutDeg0) << endl;
+return 0;
+}
